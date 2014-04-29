@@ -4,9 +4,10 @@
 #define ULTRASONIC_RIGHT 0x1 //P1.0
 #define ADC_INCH_LEFT INCH_3
 #define ADC_INCH_RIGHT INCH_0
-#define ULTRASONIC_FRONT 0x1
+#define ULTRASONIC_FRONT 0x1 //P2.0
+#define ULTRASONIC_FRONT_TRIGGER 0x2 //P2.1
 
-#define SCALE_FACTOR_FRONT 148 //inches
+#define SCALE_FACTOR_FRONT 148 //to get half-inches
 
 unsigned int ADC[4];  // Array to hold ADC values
 volatile int latest_left = 0;
@@ -32,13 +33,13 @@ void interrupt adc_handler(){
 ISR_VECTOR(adc_handler, ".int05")
 
 int get_latest_left() {
-	//TODO make these return cm instead of raw value from 0-1024
-	return latest_left;
+	//in half inches
+	return (int) (latest_left);
 }
 
 int get_latest_right() {
-	//TODO make these return cm instead of raw value from 0-1024
-	return latest_right;
+	//in half inches
+	return (int) (latest_right);
 }
 
 int get_latest_front() {
@@ -48,7 +49,7 @@ int get_latest_front() {
 
 void init_sensors() {
 	 init_sensor_adc();
-	 init_ultrasonic_timer();
+	 //init_ultrasonic_timer();
 }
 
  //Initialize the ADC
@@ -89,14 +90,13 @@ void init_ultrasonic_timer() {
 }
 
 void make_front_measurement() {
-	P2DIR |= 0x2;
-	P2OUT &= ~0x2;
+	P2DIR |= ULTRASONIC_FRONT_TRIGGER;
+	P2OUT &= ~ULTRASONIC_FRONT_TRIGGER;
 	__delay_cycles(10);
 	P2OUT |= 0x2; // compare mode, output 0, no interrupt enabled
 	__delay_cycles(10);
-	P2OUT &= ~0x2;
+	P2OUT &= ~ULTRASONIC_FRONT_TRIGGER;
 }
-
 
 interrupt void ultrasonic_timer_handler() {
 	front_state++;
@@ -105,7 +105,7 @@ interrupt void ultrasonic_timer_handler() {
 	} else if (front_state == 2) {
 		front_state = 0;
 		front_final = TA1CCR0;
-		latest_front = ((front_final - front_initial))/SCALE_FACTOR_FRONT;
+		latest_front = ((front_final - front_initial))/(SCALE_FACTOR_FRONT)*2;
 	}
 }
 ISR_VECTOR(ultrasonic_timer_handler, ".int13")

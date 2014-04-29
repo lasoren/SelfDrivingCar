@@ -5,11 +5,16 @@
  * main.c
  */
 
-#define SENSOR_LOOPS_SIDE 10
+#define SENSOR_LOOPS_SIDE 20
 #define SENSOR_LOOPS_FRONT 100
 //if the sensor on the right and left differ by this amount or more, lets turn
-#define TURN_THRESHOLD 50
-#define FRONT_THRESHOLD 50
+#define TURN_THRESHOLD 20
+//down to the end of the hall
+#define BIG_THRESHOLD 750
+//turn
+#define FRONT_TURN 50
+//backup
+#define FRONT_THRESHOLD 20
 
 double defaultPWM = 0.52;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
@@ -25,8 +30,12 @@ int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 #define R_LEFT 6
 volatile char ps = STOPPED;
 
+#define TURNBACK_LENGTH 200
+volatile char turningBack = 0;
+volatile int turnBackCounter = 0;
 
-#define TURNAROUND_LENGTH 150
+
+#define TURNAROUND_LENGTH 1500
 volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
@@ -75,6 +84,8 @@ interrupt void WDT_interval_handler(){
 	//automated driving logic
 	int leftDist = get_latest_left();
 	int rightDist = get_latest_right();
+//	double avgDist = (leftDist+rightDist)/2.0;
+//	double metric = avgDist/60.0;
 	//int frontDist = get_latest_front();
 	int frontDist = 51;
 	switch (ps) {
@@ -90,6 +101,14 @@ interrupt void WDT_interval_handler(){
 			straight();
 			ps = R_STRAIGHT;
 		}
+		else if (leftDist > BIG_THRESHOLD) {
+			left();
+			ps = F_LEFT;
+		}
+		else if (rightDist > BIG_THRESHOLD) {
+			right();
+			ps = F_RIGHT;
+		}
 		else if (leftDist - rightDist > TURN_THRESHOLD) {
 			left();
 			ps = F_LEFT;
@@ -97,6 +116,16 @@ interrupt void WDT_interval_handler(){
 		else if (rightDist - leftDist > TURN_THRESHOLD) {
 			right();
 			ps = F_RIGHT;
+		}
+		else if (frontDist < FRONT_TURN) {
+			if (leftDist >= rightDist) {
+				left();
+				ps = F_LEFT;
+			}
+			else {
+				right();
+				ps = F_RIGHT;
+			}
 		}
 		break;
 	case F_LEFT:
@@ -110,9 +139,20 @@ interrupt void WDT_interval_handler(){
 				turningAround = 0;
 			}
 		}
+		else if (turningBack == 1) {
+			turnBackCounter--;
+			if (turnBackCounter <= 0) {
+				straight();
+				ps = F_STRAIGHT;
+				turnBackCounter = 0;
+				turningBack = 0;
+			}
+		}
 		else if (rightDist >= leftDist) {
-			straight();
-			ps = F_STRAIGHT;
+			right();
+			ps = F_RIGHT;
+			turningBack = 1;
+			turnBackCounter = TURNBACK_LENGTH;
 		}
 		break;
 	case F_RIGHT:
@@ -126,9 +166,20 @@ interrupt void WDT_interval_handler(){
 				turningAround = 0;
 			}
 		}
+		else if (turningBack == 1) {
+			turnBackCounter--;
+			if (turnBackCounter <= 0) {
+				straight();
+				ps = F_STRAIGHT;
+				turnBackCounter = 0;
+				turningBack = 0;
+			}
+		}
 		else if (leftDist >= rightDist) {
-			straight();
-			ps = F_STRAIGHT;
+			left();
+			ps = F_LEFT;
+			turningBack = 1;
+			turnBackCounter = TURNBACK_LENGTH;
 		}
 		break;
 	case R_STRAIGHT:
