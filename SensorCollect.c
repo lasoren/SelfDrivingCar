@@ -11,16 +11,13 @@
 
 #define SCALE_FACTOR_FRONT 148 //to get half-inches
 
+#define CAMERA_TRIGGER_PIN 0x4 //P2.2
 #define CAMERA_POSEDGE_LEN 40 //in milliseconds
 
 unsigned int ADC[4];  // Array to hold ADC values
 volatile int latest_left = 0;
 volatile int latest_right = 0;
 volatile int latest_front = 20;
-
-void init_sensors(void);	// routine to setup the sensors
-void init_sensor_adc(void);	// routine to setup ADC
-void init_ultrasonic_timer(void);
 
 int front_state = 0;
 unsigned int front_initial = 0;

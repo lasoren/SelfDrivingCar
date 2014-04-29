@@ -5,8 +5,6 @@
  * main.c
  */
 
-#define CAMERA_TRIGGER_PIN 0x4 //P2.2
-
 #define SENSOR_LOOPS_SIDE 20
 #define SENSOR_LOOPS_FRONT 100
 //if the sensor on the right and left differ by this amount or more, lets turn
