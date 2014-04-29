@@ -6,8 +6,10 @@
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
 
-    forward(0.3);
-    straight();
+    BCSCTL1 = CALBC1_8MHZ; // 8Mhz calibration for clock
+    DCOCTL = CALDCO_8MHZ;
+
+    init_motors();
 	
-	return 0;
+    _bis_SR_register(GIE+LPM0_bits); //enable interrupts (not used) and stop CPU
 }
