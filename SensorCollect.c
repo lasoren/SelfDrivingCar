@@ -43,7 +43,7 @@ int get_latest_right() {
 }
 
 int get_latest_front() {
-	//TODO make these return cm instead of raw value from 0-1024
+	//in half inches
 	return latest_front;
 }
 

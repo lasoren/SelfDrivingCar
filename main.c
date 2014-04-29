@@ -12,11 +12,11 @@
 //down to the end of the hall
 #define BIG_THRESHOLD 750
 //turn
-#define FRONT_TURN 50
+#define FRONT_TURN 15
 //backup
-#define FRONT_THRESHOLD 20
+#define FRONT_THRESHOLD 5
 
-double defaultPWM = 0.52;
+double defaultPWM = 0.56;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 

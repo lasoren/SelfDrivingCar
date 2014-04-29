@@ -13,6 +13,7 @@ void init_sensors();
 void make_front_measurement();
 int get_latest_right();
 int get_latest_left();
+int get_latest_front();
 
 
 #endif /* SENSORCOLLECT_H_ */
