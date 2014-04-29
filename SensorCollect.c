@@ -12,15 +12,16 @@
 unsigned int ADC[4];  // Array to hold ADC values
 volatile int latest_left = 0;
 volatile int latest_right = 0;
-volatile int latest_front = 0;
+volatile int latest_front = 20;
 
 void init_sensors(void);	// routine to setup the sensors
 void init_sensor_adc(void);	// routine to setup ADC
 void init_ultrasonic_timer(void);
 
 int front_state = 0;
-int front_initial = 0;
-int front_final = 0;
+unsigned int front_initial = 0;
+unsigned int front_final = 0;
+unsigned int taie_overflow = 0;
 
 void interrupt adc_handler(){
 	latest_right = ADC[3];  // Notice the reverse in index
@@ -49,7 +50,7 @@ int get_latest_front() {
 
 void init_sensors() {
 	 init_sensor_adc();
-	 //init_ultrasonic_timer();
+	 init_ultrasonic_timer();
 }
 
  //Initialize the ADC
@@ -80,7 +81,7 @@ void init_sensor_adc(){
 
 void init_ultrasonic_timer() {
 	TA1CTL |= TACLR;              // reset clock
-	TA1CTL = TASSEL_2+ID_3+MC_2;  // clock source = SMCLK
+	TA1CTL = TASSEL_2+ID_3+MC_2+TAIE;  // clock source = SMCLK
 	                            // clock divider=1
 	                            // UP mode
 	                            // timer A interrupt off
@@ -102,10 +103,22 @@ interrupt void ultrasonic_timer_handler() {
 	front_state++;
 	if (front_state == 1) {
 		front_initial = TA1CCR0;
+		taie_overflow = 0;
 	} else if (front_state == 2) {
 		front_state = 0;
 		front_final = TA1CCR0;
-		latest_front = ((front_final - front_initial))/(SCALE_FACTOR_FRONT)*2;
+		if (taie_overflow == 0) {
+			latest_front = ((front_final - front_initial))/(SCALE_FACTOR_FRONT)*2;
+		}
 	}
 }
 ISR_VECTOR(ultrasonic_timer_handler, ".int13")
+
+
+interrupt void ultrasonic_timer_taie() {
+	if (TA1IV == 0x0A) {
+		taie_overflow++;
+	}
+	TA1CTL &= ~TAIFG;
+}
+ISR_VECTOR(ultrasonic_timer_taie, ".int12")

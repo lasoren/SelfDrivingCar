@@ -14,9 +14,9 @@
 //turn
 #define FRONT_TURN 15
 //backup
-#define FRONT_THRESHOLD 5
+#define FRONT_THRESHOLD 12
 
-double defaultPWM = 0.56;
+double defaultPWM = 0.62;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 
@@ -30,12 +30,14 @@ int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 #define R_LEFT 6
 volatile char ps = STOPPED;
 
+volatile char last_turn;
+
 #define TURNBACK_LENGTH 200
 volatile char turningBack = 0;
 volatile int turnBackCounter = 0;
 
 
-#define TURNAROUND_LENGTH 1500
+#define TURNAROUND_LENGTH 1550
 volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
@@ -86,8 +88,7 @@ interrupt void WDT_interval_handler(){
 	int rightDist = get_latest_right();
 //	double avgDist = (leftDist+rightDist)/2.0;
 //	double metric = avgDist/60.0;
-	//int frontDist = get_latest_front();
-	int frontDist = 51;
+	int frontDist = get_latest_front();
 	switch (ps) {
 	case STOPPED:
 		//start moving, just go for it
@@ -117,18 +118,19 @@ interrupt void WDT_interval_handler(){
 			right();
 			ps = F_RIGHT;
 		}
-		else if (frontDist < FRONT_TURN) {
-			if (leftDist >= rightDist) {
-				left();
-				ps = F_LEFT;
-			}
-			else {
-				right();
-				ps = F_RIGHT;
-			}
-		}
+//		else if (frontDist < FRONT_TURN) {
+//			if (leftDist >= rightDist) {
+//				left();
+//				ps = F_LEFT;
+//			}
+//			else {
+//				right();
+//				ps = F_RIGHT;
+//			}
+//		}
 		break;
 	case F_LEFT:
+		last_turn = F_LEFT;
 		if (turningAround == 1) {
 			turnAroundCounter--;
 			if (turnAroundCounter <= 0) {
@@ -156,6 +158,7 @@ interrupt void WDT_interval_handler(){
 		}
 		break;
 	case F_RIGHT:
+		last_turn = F_RIGHT;
 		if (turningAround == 1) {
 			turnAroundCounter--;
 			if (turnAroundCounter <= 0) {
@@ -185,9 +188,15 @@ interrupt void WDT_interval_handler(){
 	case R_STRAIGHT:
 		if (frontDist >= 3*FRONT_THRESHOLD) {
 			turningAround = 1;
-			right();
 			turnAroundCounter = TURNAROUND_LENGTH;
-			ps = R_RIGHT;
+			if (last_turn == F_RIGHT) {
+				ps = R_RIGHT;
+				right();
+			}
+			else {
+				ps = R_LEFT;
+				left();
+			}
 		}
 		break;
 	case R_RIGHT:
