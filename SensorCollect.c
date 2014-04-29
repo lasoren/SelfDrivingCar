@@ -1,4 +1,6 @@
 #include "msp430g2553.h"
+#include "MotorOutput.h"
+#include "SensorCollect.h"
 
 #define ULTRASONIC_LEFT 0x8 //P1.3
 #define ULTRASONIC_RIGHT 0x1 //P1.0
@@ -9,18 +11,20 @@
 
 #define SCALE_FACTOR_FRONT 148 //to get half-inches
 
+#define CAMERA_TRIGGER_PIN 0x4 //P2.2
+#define CAMERA_POSEDGE_LEN 40 //in milliseconds
+
 unsigned int ADC[4];  // Array to hold ADC values
 volatile int latest_left = 0;
 volatile int latest_right = 0;
-volatile int latest_front = 0;
-
-void init_sensors(void);	// routine to setup the sensors
-void init_sensor_adc(void);	// routine to setup ADC
-void init_ultrasonic_timer(void);
+volatile int latest_front = 20;
 
 int front_state = 0;
-int front_initial = 0;
-int front_final = 0;
+unsigned int front_initial = 0;
+unsigned int front_final = 0;
+unsigned int taie_overflow = 0;
+
+int camera_timeout = 0;
 
 void interrupt adc_handler(){
 	latest_right = ADC[3];  // Notice the reverse in index
@@ -49,10 +53,14 @@ int get_latest_front() {
 
 void init_sensors() {
 	 init_sensor_adc();
-	 //init_ultrasonic_timer();
+	 init_ultrasonic_timer();
+	 init_camera();
 }
 
- //Initialize the ADC
+void init_camera() {
+	P2DIR |= CAMERA_TRIGGER_PIN; //output
+}
+
 void init_sensor_adc(){
 	P1SEL &= ~(ULTRASONIC_LEFT & ULTRASONIC_RIGHT);
 	P1SEL2 &= ~(ULTRASONIC_LEFT & ULTRASONIC_RIGHT);
@@ -80,7 +88,7 @@ void init_sensor_adc(){
 
 void init_ultrasonic_timer() {
 	TA1CTL |= TACLR;              // reset clock
-	TA1CTL = TASSEL_2+ID_3+MC_2;  // clock source = SMCLK
+	TA1CTL = TASSEL_2+ID_3+MC_2+TAIE;  // clock source = SMCLK
 	                            // clock divider=1
 	                            // UP mode
 	                            // timer A interrupt off
@@ -102,10 +110,40 @@ interrupt void ultrasonic_timer_handler() {
 	front_state++;
 	if (front_state == 1) {
 		front_initial = TA1CCR0;
+		taie_overflow = 0;
 	} else if (front_state == 2) {
 		front_state = 0;
 		front_final = TA1CCR0;
-		latest_front = ((front_final - front_initial))/(SCALE_FACTOR_FRONT)*2;
+		if (taie_overflow == 0) {
+			latest_front = ((front_final - front_initial))/(SCALE_FACTOR_FRONT)*2;
+		}
 	}
 }
 ISR_VECTOR(ultrasonic_timer_handler, ".int13")
+
+
+interrupt void ultrasonic_timer_taie() {
+	if (TA1IV == 0x0A) {
+		taie_overflow++;
+	}
+	TA1CTL &= ~TAIFG;
+}
+ISR_VECTOR(ultrasonic_timer_taie, ".int12")
+
+void set_camera_gpio(bool high) {
+	if (high) {
+		P2OUT |= CAMERA_TRIGGER_PIN;
+	} else {
+		P2OUT &= ~CAMERA_TRIGGER_PIN;
+	}
+}
+
+bool take_picture() {
+	if (camera_timeout == 0) {
+		set_camera_gpio(true);
+		camera_timeout = CAMERA_POSEDGE_LEN;
+		return true;
+	} else {
+		return false;
+	}
+}
