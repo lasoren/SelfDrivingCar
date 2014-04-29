@@ -8,6 +8,7 @@ void init_PWM_timer(double);
 void init_motors();
 void forward(double);
 void reverse(double);
+void stop();
 void straight();
 void left();
 void right();

@@ -12,11 +12,13 @@ void init_wdt();
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
-    BCSCTL1 = CALBC1_8MHZ;    // 1Mhz calibration for clock
+
+    BCSCTL1 = CALBC1_8MHZ;    // 8Mhz calibration for clock
     DCOCTL  = CALDCO_8MHZ;
 
     init_sensors();
     init_wdt();
+    init_motors();
 
     _bis_SR_register(GIE+LPM0_bits);	//enable general interrupts and power down CPU
 }
