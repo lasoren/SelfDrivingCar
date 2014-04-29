@@ -7,8 +7,8 @@
 #define ULTRASONIC_FRONT 0x1
 
 unsigned int ADC[4];  // Array to hold ADC values
-volatile int latest_left;
-volatile int latest_right;
+volatile int latest_left = 0;
+volatile int latest_right = 0;
 
 void init_sensors(void);	// routine to setup the sensors
 void init_sensor_adc(void);	// routine to setup ADC
@@ -29,18 +29,18 @@ void interrupt adc_handler(){
 ISR_VECTOR(adc_handler, ".int05")
 
 int get_latest_left() {
-	//TODO make these return cm instead of raw value from 0-1024
-	return latest_left;
+	//in half inches
+	return (int) (latest_left);
 }
 
 int get_latest_right() {
-	//TODO make these return cm instead of raw value from 0-1024
-	return latest_right;
+	//in half inches
+	return (int) (latest_right);
 }
 
 void init_sensors() {
 	 init_sensor_adc();
-	 init_ultrasonic_timer();
+	 //init_ultrasonic_timer();
 }
 
  //Initialize the ADC
