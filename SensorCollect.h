@@ -9,9 +9,10 @@
 #define SENSORCOLLECT_H_
 
 
-
-#endif /* SENSORCOLLECT_H_ */
-
-
 void init_sensors();
 void make_front_measurement();
+int get_latest_right();
+int get_latest_left();
+
+
+#endif /* SENSORCOLLECT_H_ */

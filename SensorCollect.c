@@ -27,6 +27,16 @@ void interrupt adc_handler(){
 }
 ISR_VECTOR(adc_handler, ".int05")
 
+int get_latest_left() {
+	//TODO make these return cm instead of raw value from 0-1024
+	return latest_left;
+}
+
+int get_latest_right() {
+	//TODO make these return cm instead of raw value from 0-1024
+	return latest_right;
+}
+
 void init_sensors() {
 	 init_sensor_adc();
 	 init_ultrasonic_timer();
