@@ -43,8 +43,8 @@ interrupt void WDT_interval_handler(){
 	sensor_conversions--;
 	if (sensor_conversions == 0) {
 		sensor_conversions = SENSOR_LOOPS;
-		//ADC10CTL0 |= ADC10SC;  // trigger a conversion
-		make_front_measurement();
+		ADC10CTL0 |= ADC10SC;  // trigger a conversion
+		//make_front_measurement();
 	}
 }
 

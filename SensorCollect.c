@@ -17,6 +17,7 @@ void init_ultrasonic_timer(void);
 int front_state = 0;
 int front_initial = 0;
 int front_final = 0;
+int front_dist = 0;
 void interrupt adc_handler(){
 	latest_right = ADC[3];  // Notice the reverse in index
 	latest_left = ADC[0];
@@ -60,20 +61,27 @@ void init_sensor_adc(){
 
 void init_ultrasonic_timer() {
 	TA1CTL |= TACLR;              // reset clock
-	TA1CTL = TASSEL_2+ID_0+MC_2;  // clock source = SMCLK
+	TA1CTL = TASSEL_2+ID_3+MC_2;  // clock source = SMCLK
 	                            // clock divider=1
 	                            // UP mode
 	                            // timer A interrupt off
-	TA1CCTL0 |= CM_1 + SCS + CAP + CCIE + OUTMOD_0; // compare mode, output 0, no interrupt enabled
+	TA1CCTL0 = CM_1 + SCS + CAP + OUTMOD_0 + CCIE; // compare mode, output 0, no interrupt enabled
 	P2DIR &= ~ULTRASONIC_FRONT;
+	P2SEL |= ULTRASONIC_FRONT;
 }
 
 void make_front_measurement() {
+
+	TA1CCTL0 &= ~CCIE;
+	P2DIR |= ULTRASONIC_FRONT;
 	TA1CCTL0 &= ~OUT;
 	__delay_cycles(50);
 	TA1CCTL0 |= OUT; // compare mode, output 0, no interrupt enabled
+	//front_initial = TA1R;
 	__delay_cycles(50);
 	TA1CCTL0 &= ~OUT;
+	TA1CCTL0 |= CCIE;
+	P2DIR &= ~ULTRASONIC_FRONT;
 }
 
 
@@ -89,8 +97,8 @@ interrupt void ultrasonic_timer_handler() {
 		TA1CCTL0 |= CM_1;
 		front_final = TA1CCR0;
 	}
+	front_dist = ((front_final - front_initial))/29/2;
 	TA1CCTL0 &= ~CCIFG;
 
 }
 ISR_VECTOR(ultrasonic_timer_handler, ".int13")
-
