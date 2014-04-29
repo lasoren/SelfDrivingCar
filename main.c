@@ -7,6 +7,7 @@ int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
 
     forward(0.3);
+    straight();
 	
 	return 0;
 }

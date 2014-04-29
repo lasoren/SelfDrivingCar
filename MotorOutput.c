@@ -50,7 +50,7 @@ void init_PWM_timer(double PWM) {
 void init_motors() {
     //set the output directions as neccessary TODO
     P1DIR |= (PWMA_S+AIN1_S+AIN2_S);
-    P2DIR |= (PWMA_F+AIN1_F+AIN2_F+PWMB_B+BIN1_B+BIN2_B);
+    P2DIR |= (PWMA_F+AIN1_F+AIN2_F);
 }
 
 //input - PWM 0.0 - 1.0 specifying the PWM duty cycle
