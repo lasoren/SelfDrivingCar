@@ -1,4 +1,6 @@
 #include "msp430g2553.h"
+#include "MotorOutput.h"
+#include "SensorCollect.h"
 
 #define ULTRASONIC_LEFT 0x8 //P1.3
 #define ULTRASONIC_RIGHT 0x1 //P1.0
@@ -8,6 +10,8 @@
 #define ULTRASONIC_FRONT_TRIGGER 0x2 //P2.1
 
 #define SCALE_FACTOR_FRONT 148 //to get half-inches
+
+#define CAMERA_POSEDGE_LEN 40 //in milliseconds
 
 unsigned int ADC[4];  // Array to hold ADC values
 volatile int latest_left = 0;
@@ -22,6 +26,8 @@ int front_state = 0;
 unsigned int front_initial = 0;
 unsigned int front_final = 0;
 unsigned int taie_overflow = 0;
+
+int camera_timeout = 0;
 
 void interrupt adc_handler(){
 	latest_right = ADC[3];  // Notice the reverse in index
@@ -51,9 +57,13 @@ int get_latest_front() {
 void init_sensors() {
 	 init_sensor_adc();
 	 init_ultrasonic_timer();
+	 init_camera();
 }
 
- //Initialize the ADC
+void init_camera() {
+	P2DIR |= CAMERA_TRIGGER_PIN; //output
+}
+
 void init_sensor_adc(){
 	P1SEL &= ~(ULTRASONIC_LEFT & ULTRASONIC_RIGHT);
 	P1SEL2 &= ~(ULTRASONIC_LEFT & ULTRASONIC_RIGHT);
@@ -122,3 +132,21 @@ interrupt void ultrasonic_timer_taie() {
 	TA1CTL &= ~TAIFG;
 }
 ISR_VECTOR(ultrasonic_timer_taie, ".int12")
+
+void set_camera_gpio(bool high) {
+	if (high) {
+		P2OUT |= CAMERA_TRIGGER_PIN;
+	} else {
+		P2OUT &= ~CAMERA_TRIGGER_PIN;
+	}
+}
+
+bool take_picture() {
+	if (camera_timeout == 0) {
+		set_camera_gpio(true);
+		camera_timeout = CAMERA_POSEDGE_LEN;
+		return true;
+	} else {
+		return false;
+	}
+}

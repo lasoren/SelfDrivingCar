@@ -5,6 +5,8 @@
  * main.c
  */
 
+#define CAMERA_TRIGGER_PIN 0x4 //P2.2
+
 #define SENSOR_LOOPS_SIDE 20
 #define SENSOR_LOOPS_FRONT 100
 //if the sensor on the right and left differ by this amount or more, lets turn
@@ -19,6 +21,8 @@
 double defaultPWM = 0.62;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
+
+extern int camera_timeout; //from SensorCollect.c
 
 //possible previous states
 #define STOPPED 0
@@ -75,6 +79,12 @@ interrupt void WDT_interval_handler(){
 	//code here
 	sensor_conversions_side--;
 	sensor_conversions_front--;
+	if (camera_timeout == 1) {
+		camera_timeout = 0;
+		set_camera_gpio(false);
+	} else if (camera_timeout > 0) {
+		camera_timeout--;
+	}
 	if (sensor_conversions_side == 0) {
 		sensor_conversions_side = SENSOR_LOOPS_SIDE;
 		ADC10CTL0 |= ADC10SC;  // trigger a conversion
@@ -83,6 +93,7 @@ interrupt void WDT_interval_handler(){
 		sensor_conversions_front = SENSOR_LOOPS_FRONT;
 		make_front_measurement();
 	}
+
 	//automated driving logic
 	int leftDist = get_latest_left();
 	int rightDist = get_latest_right();
