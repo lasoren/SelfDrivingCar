@@ -12,7 +12,7 @@
 //down to the end of the hall
 #define BIG_THRESHOLD 750
 //turn
-#define FRONT_TURN 15
+#define FRONT_TURN 10
 //backup
 #define FRONT_THRESHOLD 5
 
@@ -35,7 +35,7 @@ volatile char turningBack = 0;
 volatile int turnBackCounter = 0;
 
 
-#define TURNAROUND_LENGTH 1500
+#define TURNAROUND_LENGTH 2000
 volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
