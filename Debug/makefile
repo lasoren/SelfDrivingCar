@@ -4,11 +4,19 @@
 
 SHELL = cmd.exe
 
+<<<<<<< HEAD
+CG_TOOL_ROOT := C:/ti2/ccsv5/tools/compiler/msp430_4.2.1
+=======
 CG_TOOL_ROOT := C:/ti/ccsv5/tools/compiler/msp430_4.2.1
+>>>>>>> 8e9fda374d565dd2dc722fdef250a865e2bafca5
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
 "./main.obj" \
+<<<<<<< HEAD
+"./SensorCollect.obj" \
+=======
+>>>>>>> 8e9fda374d565dd2dc722fdef250a865e2bafca5
 "./MotorOutput.obj" \
 "../lnk_msp430g2553.cmd" \
 -l"libc.a" \
@@ -116,15 +124,24 @@ all: SelfDrivingCar.out
 SelfDrivingCar.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MSP430 Linker'
+<<<<<<< HEAD
+	"C:/ti2/ccsv5/tools/compiler/msp430_4.2.1/bin/cl430" -vmsp --abi=eabi --advice:power=all -g --define=__MSP430G2553__ --diag_warning=225 --display_error_number --diag_wrap=off --printf_support=minimal -z -m"SelfDrivingCar.map" --heap_size=80 --stack_size=80 -i"C:/ti2/ccsv5/ccs_base/msp430/include" -i"C:/ti2/ccsv5/tools/compiler/msp430_4.2.1/lib" -i"C:/ti2/ccsv5/tools/compiler/msp430_4.2.1/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="SelfDrivingCar_linkInfo.xml" --rom_model -o "SelfDrivingCar.out" $(ORDERED_OBJS)
+=======
 	"C:/ti/ccsv5/tools/compiler/msp430_4.2.1/bin/cl430" -vmsp --abi=eabi --advice:power=all -g --define=__MSP430G2553__ --diag_warning=225 --display_error_number --diag_wrap=off --printf_support=minimal -z -m"SelfDrivingCar.map" --heap_size=80 --stack_size=80 -i"C:/ti/ccsv5/ccs_base/msp430/include" -i"C:/ti/ccsv5/tools/compiler/msp430_4.2.1/lib" -i"C:/ti/ccsv5/tools/compiler/msp430_4.2.1/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="SelfDrivingCar_linkInfo.xml" --rom_model -o "SelfDrivingCar.out" $(ORDERED_OBJS)
+>>>>>>> 8e9fda374d565dd2dc722fdef250a865e2bafca5
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(MSP430_EXECUTABLE_OUTPUTS__QUOTED) "SelfDrivingCar.out"
+<<<<<<< HEAD
+	-$(RM) "MotorOutput.pp" "SensorCollect.pp" "main.pp" 
+	-$(RM) "MotorOutput.obj" "SensorCollect.obj" "main.obj" 
+=======
 	-$(RM) "MotorOutput.pp" "main.pp" 
 	-$(RM) "MotorOutput.obj" "main.obj" 
+>>>>>>> 8e9fda374d565dd2dc722fdef250a865e2bafca5
 	-@echo 'Finished clean'
 	-@echo ' '
 
