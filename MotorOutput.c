@@ -11,26 +11,21 @@
 //128 BIT8 P1.7
 
 //driving
-//front
-#define PWMA_F BIT3
-#define AIN1_F
-#define AIN2_F
-//back
-#define PWMB_B BIT3
-#define BIN1_B
-#define BIN2_B
+#define PWMA_F 4 //port1.2, controls motors PWM
+#define AIN1_F 8 //port2, controls the front and back motors
+#define AIN2_F 16
 
 //steering
-#define PWMA_S 
-#define AIN1_S
-#define AIN2_S
+#define PWMA_S 32 //port1, controls the steering
+#define AIN1_S 64
+#define AIN2_S 128
 
 // define direction register, output register, and select registers
 #define TA_DIR P1DIR
 #define TA_OUT P1OUT
 #define TA_SEL P1SEL
 // define the bit mask (within the port) corresponding to output TA1
-#define TA1_BIT BIT3
+#define TA1_BIT 4
 
 void init_PWM_timer(double PWM) {
     
@@ -55,21 +50,21 @@ void init_PWM_timer(double PWM) {
 void init_motors() {
     //set the output directions as neccessary TODO
     P1DIR |= (PWMA_S+AIN1_S+AIN2_S);
-    P2DIR |= (PWMA_F+AIN1_F+AIN2_F+PWMB_B+BIN1_B+BIN2_B);
+    P2DIR |= (PWMA_F+AIN1_F+AIN2_F);
 }
 
 //input - PWM 0.0 - 1.0 specifying the PWM duty cycle
 void forward(double PWM) {
     init_PWM_timer(PWM);
-    P1OUT |= (AIN1_F+BIN1_B);
-    P1OUT &= !(AIN2_F+BIN2_B);
+    P1OUT |= (AIN1_F);
+    P1OUT &= !(AIN2_F);
 }
 
 //input - PWM 0.0 - 1.0 specifying the PWM duty cycle
 void reverse(double PWM) {
     init_PWM_timer(PWM);
-    P1OUT |= (AIN2_F+BIN2_B);
-    P1OUT &= !(AIN1_F+BIN1_B);
+    P1OUT |= (AIN2_F);
+    P1OUT &= !(AIN1_F);
 }
 
 void straight() {

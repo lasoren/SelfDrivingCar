@@ -1,5 +1,5 @@
-#include <msp430.h> 
-
+#include "msp430g2553.h"
+#include "MotorOutput.h"
 /*
  * main.c
  */
@@ -8,6 +8,7 @@ void init_wdt();
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
+<<<<<<< HEAD
     BCSCTL1 = CALBC1_8MHZ;    // 1Mhz calibration for clock
     DCOCTL  = CALDCO_8MHZ;
 
@@ -15,6 +16,13 @@ int main(void) {
     init_wdt();
 
     _bis_SR_register(GIE+LPM0_bits);	//enable general interrupts and power down CPU
+=======
+
+    forward(0.3);
+    straight();
+	
+	return 0;
+>>>>>>> 8e9fda374d565dd2dc722fdef250a865e2bafca5
 }
 
 //Initializes WDT
