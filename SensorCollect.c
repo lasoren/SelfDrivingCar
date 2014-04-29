@@ -6,9 +6,12 @@
 #define ADC_INCH_RIGHT INCH_0
 #define ULTRASONIC_FRONT 0x1
 
+#define SCALE_FACTOR_FRONT 148 //inches
+
 unsigned int ADC[4];  // Array to hold ADC values
-volatile int latest_left;
-volatile int latest_right;
+volatile int latest_left = 0;
+volatile int latest_right = 0;
+volatile int latest_front = 0;
 
 void init_sensors(void);	// routine to setup the sensors
 void init_sensor_adc(void);	// routine to setup ADC
@@ -17,7 +20,7 @@ void init_ultrasonic_timer(void);
 int front_state = 0;
 int front_initial = 0;
 int front_final = 0;
-int front_dist = 0;
+
 void interrupt adc_handler(){
 	latest_right = ADC[3];  // Notice the reverse in index
 	latest_left = ADC[0];
@@ -36,6 +39,11 @@ int get_latest_left() {
 int get_latest_right() {
 	//TODO make these return cm instead of raw value from 0-1024
 	return latest_right;
+}
+
+int get_latest_front() {
+	//TODO make these return cm instead of raw value from 0-1024
+	return latest_front;
 }
 
 void init_sensors() {
@@ -75,40 +83,29 @@ void init_ultrasonic_timer() {
 	                            // clock divider=1
 	                            // UP mode
 	                            // timer A interrupt off
-	TA1CCTL0 = CM_1 + SCS + CAP + OUTMOD_0 + CCIE; // compare mode, output 0, no interrupt enabled
+	TA1CCTL0 = CM_3 + SCS + CAP + OUTMOD_0 + CCIE; // compare mode, output 0, no interrupt enabled
 	P2DIR &= ~ULTRASONIC_FRONT;
 	P2SEL |= ULTRASONIC_FRONT;
 }
 
 void make_front_measurement() {
-
-	TA1CCTL0 &= ~CCIE;
-	P2DIR |= ULTRASONIC_FRONT;
-	TA1CCTL0 &= ~OUT;
-	__delay_cycles(50);
-	TA1CCTL0 |= OUT; // compare mode, output 0, no interrupt enabled
-	//front_initial = TA1R;
-	__delay_cycles(50);
-	TA1CCTL0 &= ~OUT;
-	TA1CCTL0 |= CCIE;
-	P2DIR &= ~ULTRASONIC_FRONT;
+	P2DIR |= 0x2;
+	P2OUT &= ~0x2;
+	__delay_cycles(10);
+	P2OUT |= 0x2; // compare mode, output 0, no interrupt enabled
+	__delay_cycles(10);
+	P2OUT &= ~0x2;
 }
 
 
 interrupt void ultrasonic_timer_handler() {
-	if (front_state == 0) {
-		front_state = 1;
-		TA1CCTL0 &= ~CM_1;
-		TA1CCTL0 |= CM_2;
+	front_state++;
+	if (front_state == 1) {
 		front_initial = TA1CCR0;
-	} else {
+	} else if (front_state == 2) {
 		front_state = 0;
-		TA1CCTL0 &= ~CM_2;
-		TA1CCTL0 |= CM_1;
 		front_final = TA1CCR0;
+		latest_front = ((front_final - front_initial))/SCALE_FACTOR_FRONT;
 	}
-	front_dist = ((front_final - front_initial))/29/2;
-	TA1CCTL0 &= ~CCIFG;
-
 }
 ISR_VECTOR(ultrasonic_timer_handler, ".int13")

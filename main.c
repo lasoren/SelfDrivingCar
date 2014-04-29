@@ -5,13 +5,15 @@
  * main.c
  */
 
-#define SENSOR_LOOPS 10
+#define SENSOR_LOOPS_SIDE 10
+#define SENSOR_LOOPS_FRONT 100
 //if the sensor on the right and left differ by this amount or more, lets turn
 #define TURN_THRESHOLD 50
 #define FRONT_THRESHOLD 50
 
 double defaultPWM = 0.52;
-int sensor_conversions = SENSOR_LOOPS;
+int sensor_conversions_side = SENSOR_LOOPS_SIDE;
+int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 
 //possible previous states
 #define STOPPED 0
@@ -60,11 +62,15 @@ void init_wdt(){ // setup WDT
 //called every 1 ms
 interrupt void WDT_interval_handler(){
 	//code here
-	sensor_conversions--;
-	if (sensor_conversions == 0) {
-		sensor_conversions = SENSOR_LOOPS;
+	sensor_conversions_side--;
+	sensor_conversions_front--;
+	if (sensor_conversions_side == 0) {
+		sensor_conversions_side = SENSOR_LOOPS_SIDE;
 		ADC10CTL0 |= ADC10SC;  // trigger a conversion
-		//make_front_measurement();
+	}
+	if (sensor_conversions_front == 0) {
+		sensor_conversions_front = SENSOR_LOOPS_FRONT;
+		make_front_measurement();
 	}
 	//automated driving logic
 	int leftDist = get_latest_left();
