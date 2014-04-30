@@ -1,4 +1,5 @@
 #include "msp430g2553.h"
+#include "stdlib.h"
 #include "MotorOutput.h"
 #include "SensorCollect.h"
 /*
@@ -19,7 +20,7 @@
 #define PICTURE_TIMER 1000
 volatile int pictureTimer = 1000;
 
-double defaultPWM = 0.70;
+double defaultPWM = 0.60;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 
@@ -41,12 +42,21 @@ volatile char last_turn;
 volatile char turningBack = 0;
 volatile int turnBackCounter = 0;
 
+#define ARRAY_SIZE 18
+#define NUM_SENSORS 3
+int lastData[ARRAY_SIZE][NUM_SENSORS];
+volatile char idx = 0;
+#define STUCK_COUNT 200
+char stuckCounter = STUCK_COUNT;
 
-#define TURNAROUND_LENGTH 1550
+
+
+#define TURNAROUND_LENGTH 1500
 volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
 void init_wdt();
+void init_lastData();
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
@@ -57,6 +67,7 @@ int main(void) {
     init_sensors();
     init_wdt();
     init_motors();
+    init_lastData();
 
     _bis_SR_register(GIE+LPM0_bits);	//enable general interrupts and power down CPU
 }
@@ -75,11 +86,37 @@ void init_wdt(){ // setup WDT
 	  IE1 |= WDTIE;		// enable the WDT interrupt (in the system interrupt register IE1)
 }
 
+void init_lastData() {
+	char i = 0;
+	for (i = 0; i < ARRAY_SIZE; i++) {
+		lastData[i][0] = 300; //right dist
+		lastData[i][1] = 300; //left dist
+		lastData[i][2] = 300; //front dist
+	}
+}
+
+bool amIStuck() {
+	unsigned int sum = 0;
+	char i = 0;
+	for (i = 0; i < ARRAY_SIZE; i++) {
+		sum += lastData[i][0] + lastData[i][1] + lastData[i][2];
+	}
+	if (sum/(3*ARRAY_SIZE) < 7) {
+		return true;
+	}
+	return false;
+}
+
 //called every 1 ms
 interrupt void WDT_interval_handler(){
-	//code here
+	int leftDist = get_latest_left();
+	int rightDist = get_latest_right();
+	int frontDist = get_latest_front();
+	bool iAmStuck = false;
+
 	sensor_conversions_side--;
 	sensor_conversions_front--;
+	stuckCounter--;
 	if (camera_timeout == 1) {
 		camera_timeout = 0;
 		set_camera_gpio(false);
@@ -94,13 +131,20 @@ interrupt void WDT_interval_handler(){
 		sensor_conversions_front = SENSOR_LOOPS_FRONT;
 		make_front_measurement();
 	}
+	if (stuckCounter == 0) {
+		stuckCounter = STUCK_COUNT;
+		//keep track of the current sensor values
+		char current = idx%20;
+		char prev = (idx-1)%20;
+		lastData[current][0] = abs(lastData[prev][0] - rightDist);
+		lastData[current][1] = abs(lastData[prev][1] - leftDist);
+		lastData[current][2] = abs(lastData[prev][2] - frontDist);
+		idx++;
+
+		iAmStuck = amIStuck();
+	}
 
 	//automated driving logic
-	int leftDist = get_latest_left();
-	int rightDist = get_latest_right();
-//	double avgDist = (leftDist+rightDist)/2.0;
-//	double metric = avgDist/60.0;
-	int frontDist = get_latest_front();
 	pictureTimer--;
 	switch (ps) {
 	case STOPPED:
@@ -110,9 +154,19 @@ interrupt void WDT_interval_handler(){
 		ps = F_STRAIGHT;
 		break;
 	case F_STRAIGHT:
+		if (iAmStuck) {
+			reverse(defaultPWM);
+			straight();
+			ps = R_STRAIGHT;
+			turningAround = 1;
+			turnAroundCounter = TURNAROUND_LENGTH;
+			init_lastData();
+			iAmStuck = false;
+			break;
+		}
 		if (pictureTimer <= 0) {
 			pictureTimer = PICTURE_TIMER;
-			take_picture();
+			bool success = take_picture();
 		}
 		//movement logic
 		if (frontDist <= FRONT_THRESHOLD) {
@@ -151,6 +205,16 @@ interrupt void WDT_interval_handler(){
 		break;
 	case F_LEFT:
 		last_turn = F_LEFT;
+		if (iAmStuck) {
+			reverse(defaultPWM);
+			straight();
+			ps = R_STRAIGHT;
+			turningAround = 1;
+			turnAroundCounter = TURNAROUND_LENGTH;
+			init_lastData();
+			iAmStuck = false;
+			break;
+		}
 		if (turningAround == 1) {
 			turnAroundCounter--;
 			if (turnAroundCounter <= TURNAROUND_LENGTH/2) {
@@ -179,6 +243,16 @@ interrupt void WDT_interval_handler(){
 		break;
 	case F_RIGHT:
 		last_turn = F_RIGHT;
+		if (iAmStuck) {
+			reverse(defaultPWM);
+			straight();
+			ps = R_STRAIGHT;
+			turningAround = 1;
+			turnAroundCounter = TURNAROUND_LENGTH;
+			init_lastData();
+			iAmStuck = false;
+			break;
+		}
 		if (turningAround == 1) {
 			turnAroundCounter--;
 			if (turnAroundCounter <= TURNAROUND_LENGTH/2) {
