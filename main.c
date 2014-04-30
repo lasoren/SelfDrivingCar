@@ -15,8 +15,11 @@
 #define FRONT_TURN 10
 //backup
 #define FRONT_THRESHOLD 12
+//take pictures once a second
+#define PICTURE_TIMER 1000
+volatile int pictureTimer = 1000;
 
-double defaultPWM = 0.62;
+double defaultPWM = 0.70;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 
@@ -98,6 +101,7 @@ interrupt void WDT_interval_handler(){
 //	double avgDist = (leftDist+rightDist)/2.0;
 //	double metric = avgDist/60.0;
 	int frontDist = get_latest_front();
+	pictureTimer--;
 	switch (ps) {
 	case STOPPED:
 		//start moving, just go for it
@@ -106,10 +110,17 @@ interrupt void WDT_interval_handler(){
 		ps = F_STRAIGHT;
 		break;
 	case F_STRAIGHT:
+		if (pictureTimer <= 0) {
+			pictureTimer = PICTURE_TIMER;
+			take_picture();
+		}
+		//movement logic
 		if (frontDist <= FRONT_THRESHOLD) {
 			reverse(defaultPWM);
 			straight();
 			ps = R_STRAIGHT;
+			turningAround = 1;
+			turnAroundCounter = TURNAROUND_LENGTH;
 		}
 		else if (leftDist > BIG_THRESHOLD) {
 			left();
@@ -142,7 +153,7 @@ interrupt void WDT_interval_handler(){
 		last_turn = F_LEFT;
 		if (turningAround == 1) {
 			turnAroundCounter--;
-			if (turnAroundCounter <= 0) {
+			if (turnAroundCounter <= TURNAROUND_LENGTH/2) {
 				forward(defaultPWM);
 				straight();
 				turnAroundCounter = 0;
@@ -170,7 +181,7 @@ interrupt void WDT_interval_handler(){
 		last_turn = F_RIGHT;
 		if (turningAround == 1) {
 			turnAroundCounter--;
-			if (turnAroundCounter <= 0) {
+			if (turnAroundCounter <= TURNAROUND_LENGTH/2) {
 				forward(defaultPWM);
 				straight();
 				turnAroundCounter = 0;
@@ -195,8 +206,8 @@ interrupt void WDT_interval_handler(){
 		}
 		break;
 	case R_STRAIGHT:
-		if (frontDist >= 3*FRONT_THRESHOLD) {
-			turningAround = 1;
+		turnAroundCounter--;
+		if (frontDist >= 3*FRONT_THRESHOLD || turnAroundCounter <= 0) {
 			turnAroundCounter = TURNAROUND_LENGTH;
 			if (last_turn == F_RIGHT) {
 				ps = R_RIGHT;
