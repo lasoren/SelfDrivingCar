@@ -1,6 +1,8 @@
 #include "msp430g2553.h"
 #include "MotorOutput.h"
 
+//written by Luke Sorenson
+
 //driving
 #define PWMA_F BIT2 //port1.2, controls motors PWM
 #define AIN1_F BIT3 //port2, controls the front and back motors
@@ -15,8 +17,8 @@
 #define TA_DIR P1DIR
 #define TA_OUT P1OUT
 #define TA_SEL P1SEL
-// define the bit mask (within the port) corresponding to output TA1
-#define TA1_BIT BIT2
+// define the bit mask (within the port) corresponding to output TA0
+#define TA0_BIT BIT2
 
 void init_PWM_timer(double PWM) {
     
@@ -32,8 +34,8 @@ void init_PWM_timer(double PWM) {
 	 TACCTL1=OUTMOD_7; // reset/set mode
 	 TACCR0 = 999; // period-1 in CCR0
 	 TACCR1 = (int) (PWM*999); // duty cycle in CCR1
-	 TA_SEL|=TA1_BIT; // connect timer 1 output to pin 2
-	 TA_DIR|=TA1_BIT;
+	 TA_SEL|=TA0_BIT; // connect timer 0 output to pin 2
+	 TA_DIR|=TA0_BIT;
 	 TACTL |= MC_1; // timer on in up mode
 }
 

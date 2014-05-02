@@ -6,6 +6,9 @@
  * SIM-V (Self-Driving Indoor Mapping Vehicle)
  *
  *Built and Coded by Luke Sorenson and John Moore
+ *
+ *
+ *main.c by Luke Sorenson
  */
 
 #define SENSOR_LOOPS_SIDE 20
@@ -125,14 +128,17 @@ interrupt void WDT_interval_handler(){
 	} else if (camera_timeout > 0) {
 		camera_timeout--;
 	}
+	//trigger the front sensor every 100ms
 	if (sensor_conversions_side == 0) {
 		sensor_conversions_side = SENSOR_LOOPS_SIDE;
 		ADC10CTL0 |= ADC10SC;  // trigger a conversion
 	}
+	//trigger an ADC conversion on left and right sensors every 20ms
 	if (sensor_conversions_front == 0) {
 		sensor_conversions_front = SENSOR_LOOPS_FRONT;
 		make_front_measurement();
 	}
+	//keep track of the last 18 sensor measurements
 	if (stuckCounter == 0) {
 		stuckCounter = STUCK_COUNT;
 		//keep track of the current sensor values
@@ -143,9 +149,11 @@ interrupt void WDT_interval_handler(){
 		lastData[current][2] = abs(lastData[prev][2] - frontDist);
 		idx++;
 
+		//if the car hasnt moved in the last 18 sensor measurements
 		iAmStuck = amIStuck();
 	}
 
+	//if the car isnt stopped, take a picture every 1000ms
 	if (ps != STOPPED) {
 		if (pictureTimer <= 0) {
 			pictureTimer = PICTURE_TIMER;
@@ -163,6 +171,7 @@ interrupt void WDT_interval_handler(){
 		ps = F_STRAIGHT;
 		break;
 	case F_STRAIGHT:
+		//stuck, car hasnt moved in 3 seconds
 		if (iAmStuck) {
 			reverse(defaultPWM);
 			straight();
@@ -173,7 +182,7 @@ interrupt void WDT_interval_handler(){
 			iAmStuck = false;
 			break;
 		}
-		//movement logic
+		//up against a wall
 		if (frontDist <= FRONT_THRESHOLD) {
 			reverse(defaultPWM);
 			straight();
@@ -181,6 +190,7 @@ interrupt void WDT_interval_handler(){
 			turningAround = 1;
 			turnAroundCounter = TURNAROUND_LENGTH;
 		}
+		//looking down and open hallway
 		else if (leftDist > BIG_THRESHOLD) {
 			left();
 			ps = F_LEFT;
@@ -189,6 +199,7 @@ interrupt void WDT_interval_handler(){
 			right();
 			ps = F_RIGHT;
 		}
+		//off center in a hallway
 		else if (leftDist - rightDist > TURN_THRESHOLD) {
 			left();
 			ps = F_LEFT;
@@ -210,6 +221,7 @@ interrupt void WDT_interval_handler(){
 			iAmStuck = false;
 			break;
 		}
+		//in the process of turning around
 		if (turningAround == 1) {
 			turnAroundCounter--;
 			if (turnAroundCounter <= TURNAROUND_LENGTH/2) {
@@ -220,6 +232,7 @@ interrupt void WDT_interval_handler(){
 				turningAround = 0;
 			}
 		}
+		//turning back to center wheels
 		else if (turningBack == 1) {
 			turnBackCounter--;
 			if (turnBackCounter <= 0) {
@@ -229,6 +242,7 @@ interrupt void WDT_interval_handler(){
 				turningBack = 0;
 			}
 		}
+		//stop turning, we are now centered in hallway
 		else if (rightDist >= leftDist) {
 			right();
 			ps = F_RIGHT;

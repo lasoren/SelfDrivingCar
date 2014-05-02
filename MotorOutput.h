@@ -1,5 +1,6 @@
 #include "msp430g2553.h"
 //header file for MotorOutput.c
+//written by Luke Sorenson
 
 #ifndef MOTOR_OUTPUT
 #define MOTOR_OUTPUT
