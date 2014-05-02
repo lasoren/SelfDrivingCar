@@ -20,7 +20,7 @@
 #define PICTURE_TIMER 1000
 volatile int pictureTimer = 1000;
 
-double defaultPWM = 0.60;
+double defaultPWM = 0.58;
 int sensor_conversions_side = SENSOR_LOOPS_SIDE;
 int sensor_conversions_front = SENSOR_LOOPS_FRONT;
 
@@ -38,7 +38,7 @@ volatile char ps = STOPPED;
 
 volatile char last_turn;
 
-#define TURNBACK_LENGTH 200
+#define TURNBACK_LENGTH 30
 volatile char turningBack = 0;
 volatile int turnBackCounter = 0;
 
@@ -51,12 +51,12 @@ char stuckCounter = STUCK_COUNT;
 
 
 
-#define TURNAROUND_LENGTH 1500
+#define TURNAROUND_LENGTH 1450
 volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
 void init_wdt();
-void init_lastData();
+//void init_lastData();
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
@@ -67,7 +67,7 @@ int main(void) {
     init_sensors();
     init_wdt();
     init_motors();
-    init_lastData();
+//    init_lastData();
 
     _bis_SR_register(GIE+LPM0_bits);	//enable general interrupts and power down CPU
 }
@@ -144,6 +144,13 @@ interrupt void WDT_interval_handler(){
 		iAmStuck = amIStuck();
 	}
 
+	if (ps != STOPPED) {
+		if (pictureTimer <= 0) {
+			pictureTimer = PICTURE_TIMER;
+			bool success = take_picture();
+		}
+	}
+
 	//automated driving logic
 	pictureTimer--;
 	switch (ps) {
@@ -163,10 +170,6 @@ interrupt void WDT_interval_handler(){
 			init_lastData();
 			iAmStuck = false;
 			break;
-		}
-		if (pictureTimer <= 0) {
-			pictureTimer = PICTURE_TIMER;
-			bool success = take_picture();
 		}
 		//movement logic
 		if (frontDist <= FRONT_THRESHOLD) {
@@ -192,16 +195,6 @@ interrupt void WDT_interval_handler(){
 			right();
 			ps = F_RIGHT;
 		}
-//		else if (frontDist < FRONT_TURN) {
-//			if (leftDist >= rightDist) {
-//				left();
-//				ps = F_LEFT;
-//			}
-//			else {
-//				right();
-//				ps = F_RIGHT;
-//			}
-//		}
 		break;
 	case F_LEFT:
 		last_turn = F_LEFT;
