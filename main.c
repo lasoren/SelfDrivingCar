@@ -58,7 +58,7 @@ volatile char turningAround = 0; //1 is turning around
 volatile int turnAroundCounter = 0;
 
 void init_wdt();
-//void init_lastData();
+void init_lastData();
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
@@ -69,7 +69,7 @@ int main(void) {
     init_sensors();
     init_wdt();
     init_motors();
-//    init_lastData();
+    init_lastData();
 
     _bis_SR_register(GIE+LPM0_bits);	//enable general interrupts and power down CPU
 }

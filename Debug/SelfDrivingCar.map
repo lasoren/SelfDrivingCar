@@ -1,10 +1,10 @@
 ******************************************************************************
                   MSP430 Linker PC v4.2.1                      
 ******************************************************************************
->> Linked Fri May 02 04:02:47 2014
+>> Linked Fri May 02 04:07:08 2014
 
 OUTPUT FILE NAME:   <SelfDrivingCar.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 0000ce58
+ENTRY POINT SYMBOL: "_c_int00"  address: 0000ce5c
 
 
 MEMORY CONFIGURATION
@@ -19,7 +19,7 @@ MEMORY CONFIGURATION
   INFOC                 00001040   00000040  00000000  00000040  RWIX
   INFOB                 00001080   00000040  00000000  00000040  RWIX
   INFOA                 000010c0   00000040  00000000  00000040  RWIX
-  FLASH                 0000c000   00003fe0  00001048  00002f98  RWIX
+  FLASH                 0000c000   00003fe0  0000104c  00002f94  RWIX
   INT00                 0000ffe0   00000002  00000000  00000002  RWIX
   INT01                 0000ffe2   00000002  00000000  00000002  RWIX
   INT02                 0000ffe4   00000002  00000002  00000000  RWIX
@@ -65,7 +65,7 @@ section   page    origin      length       input sections
                   000003b0    00000002     rts430_eabi.lib : boot.obj (.stack)
                   000003b2    0000004e     --HOLE--
 
-.text      0    0000c000    00001018     
+.text      0    0000c000    0000101c     
                   0000c000    0000041e     main.obj (.text:WDT_interval_handler)
                   0000c41e    000002f8     rts430_eabi.lib : frcmpyd.obj (.text:__TI_frcmpyd)
                   0000c716    00000256                     : mpyd.obj (.text:__mspabi_mpyd)
@@ -84,47 +84,47 @@ section   page    origin      length       input sections
                   0000cd3a    0000002c     rts430_eabi.lib : asr16.obj (.text)
                   0000cd66    0000002c                     : div16s.obj (.text)
                   0000cd92    0000002c                     : lsl16.obj (.text)
-                  0000cdbe    00000028                     : fixdi.obj (.text:__mspabi_fixdi)
-                  0000cde6    00000026     main.obj (.text:main)
-                  0000ce0c    00000026     SensorCollect.obj (.text:make_front_measurement)
-                  0000ce32    00000026     rts430_eabi.lib : mult32.obj (.text)
-                  0000ce58    0000001a                     : boot.obj (.text:_c_int00_noexit)
-                  0000ce72    0000001a     SensorCollect.obj (.text:init_ultrasonic_timer)
-                  0000ce8c    00000018     SensorCollect.obj (.text:adc_handler)
-                  0000cea4    00000018     SensorCollect.obj (.text:take_picture)
-                  0000cebc    00000016     rts430_eabi.lib : div16u.obj (.text)
-                  0000ced2    00000014                     : copy_zero_init.obj (.text:decompress:ZI:__TI_zero_init)
-                  0000cee6    00000014                     : mult16.obj (.text)
-                  0000cefa    00000014     MotorOutput.obj (.text:stop)
-                  0000cf0e    00000012     rts430_eabi.lib : copy_decompress_none.obj (.text:decompress:none:__TI_decompress_none)
-                  0000cf20    00000012                     : lsr32.obj (.text:l_lsr)
-                  0000cf32    00000012                     : memcpy.obj (.text:memcpy)
-                  0000cf44    00000012     SensorCollect.obj (.text:ultrasonic_timer_taie)
-                  0000cf56    00000010     MotorOutput.obj (.text:forward)
-                  0000cf66    00000010     MotorOutput.obj (.text:reverse)
-                  0000cf76    00000010     rts430_eabi.lib : epilog.obj (.text)
-                  0000cf86    00000010     SensorCollect.obj (.text:set_camera_gpio)
-                  0000cf96    0000000e     MotorOutput.obj (.text:init_motors)
-                  0000cfa4    0000000e     SensorCollect.obj (.text:init_sensors)
-                  0000cfb2    0000000e     MotorOutput.obj (.text:left)
-                  0000cfc0    0000000e     MotorOutput.obj (.text:right)
-                  0000cfce    0000000c     main.obj (.text:init_wdt)
-                  0000cfda    0000000a     rts430_eabi.lib : abs.obj (.text:abs)
-                  0000cfe4    00000008     MotorOutput.obj (.text:straight)
-                  0000cfec    00000006     rts430_eabi.lib : isr_trap.obj (.text:__TI_ISR_TRAP)
-                  0000cff2    00000006                     : copy_decompress_rle.obj (.text:decompress:rle24:__TI_decompress_rle24)
-                  0000cff8    00000006     SensorCollect.obj (.text:get_latest_front)
-                  0000cffe    00000006     SensorCollect.obj (.text:get_latest_left)
-                  0000d004    00000006     SensorCollect.obj (.text:get_latest_right)
-                  0000d00a    00000006     SensorCollect.obj (.text:init_camera)
-                  0000d010    00000004     rts430_eabi.lib : pre_init.obj (.text:_system_pre_init)
-                  0000d014    00000004                     : exit.obj (.text:abort)
+                  0000cdbe    0000002a     main.obj (.text:main)
+                  0000cde8    00000028     rts430_eabi.lib : fixdi.obj (.text:__mspabi_fixdi)
+                  0000ce10    00000026     SensorCollect.obj (.text:make_front_measurement)
+                  0000ce36    00000026     rts430_eabi.lib : mult32.obj (.text)
+                  0000ce5c    0000001a                     : boot.obj (.text:_c_int00_noexit)
+                  0000ce76    0000001a     SensorCollect.obj (.text:init_ultrasonic_timer)
+                  0000ce90    00000018     SensorCollect.obj (.text:adc_handler)
+                  0000cea8    00000018     SensorCollect.obj (.text:take_picture)
+                  0000cec0    00000016     rts430_eabi.lib : div16u.obj (.text)
+                  0000ced6    00000014                     : copy_zero_init.obj (.text:decompress:ZI:__TI_zero_init)
+                  0000ceea    00000014                     : mult16.obj (.text)
+                  0000cefe    00000014     MotorOutput.obj (.text:stop)
+                  0000cf12    00000012     rts430_eabi.lib : copy_decompress_none.obj (.text:decompress:none:__TI_decompress_none)
+                  0000cf24    00000012                     : lsr32.obj (.text:l_lsr)
+                  0000cf36    00000012                     : memcpy.obj (.text:memcpy)
+                  0000cf48    00000012     SensorCollect.obj (.text:ultrasonic_timer_taie)
+                  0000cf5a    00000010     MotorOutput.obj (.text:forward)
+                  0000cf6a    00000010     MotorOutput.obj (.text:reverse)
+                  0000cf7a    00000010     rts430_eabi.lib : epilog.obj (.text)
+                  0000cf8a    00000010     SensorCollect.obj (.text:set_camera_gpio)
+                  0000cf9a    0000000e     MotorOutput.obj (.text:init_motors)
+                  0000cfa8    0000000e     SensorCollect.obj (.text:init_sensors)
+                  0000cfb6    0000000e     MotorOutput.obj (.text:left)
+                  0000cfc4    0000000e     MotorOutput.obj (.text:right)
+                  0000cfd2    0000000c     main.obj (.text:init_wdt)
+                  0000cfde    0000000a     rts430_eabi.lib : abs.obj (.text:abs)
+                  0000cfe8    00000008     MotorOutput.obj (.text:straight)
+                  0000cff0    00000006     rts430_eabi.lib : isr_trap.obj (.text:__TI_ISR_TRAP)
+                  0000cff6    00000006                     : copy_decompress_rle.obj (.text:decompress:rle24:__TI_decompress_rle24)
+                  0000cffc    00000006     SensorCollect.obj (.text:get_latest_front)
+                  0000d002    00000006     SensorCollect.obj (.text:get_latest_left)
+                  0000d008    00000006     SensorCollect.obj (.text:get_latest_right)
+                  0000d00e    00000006     SensorCollect.obj (.text:init_camera)
+                  0000d014    00000004     rts430_eabi.lib : pre_init.obj (.text:_system_pre_init)
+                  0000d018    00000004                     : exit.obj (.text:abort)
 
-.cinit     0    0000d018    00000030     
-                  0000d018    0000001e     (.cinit..data.load) [load image, compression = rle]
-                  0000d036    00000006     (__TI_handler_table)
-                  0000d03c    00000004     (.cinit..bss.load) [load image, compression = zero_init]
-                  0000d040    00000008     (__TI_cinit_table)
+.cinit     0    0000d01c    00000030     
+                  0000d01c    0000001e     (.cinit..data.load) [load image, compression = rle]
+                  0000d03a    00000006     (__TI_handler_table)
+                  0000d040    00000004     (.cinit..bss.load) [load image, compression = zero_init]
+                  0000d044    00000008     (__TI_cinit_table)
 
 PORT1      0    0000ffe4    00000002     
                   0000ffe4    00000002     rts430_eabi.lib : int02.obj (.int02)
@@ -175,14 +175,14 @@ NMI        0    0000fffc    00000002
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 0000d040 records: 2, size/record: 4, table size: 8
-	.data: load addr=0000d018, load size=0000001e bytes, run addr=00000276, run size=00000028 bytes, compression=rle
-	.bss: load addr=0000d03c, load size=00000004 bytes, run addr=00000200, run size=00000075 bytes, compression=zero_init
+__TI_cinit_table @ 0000d044 records: 2, size/record: 4, table size: 8
+	.data: load addr=0000d01c, load size=0000001e bytes, run addr=00000276, run size=00000028 bytes, compression=rle
+	.bss: load addr=0000d040, load size=00000004 bytes, run addr=00000200, run size=00000075 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 0000d036 records: 3, size/record: 2, table size: 6
+__TI_handler_table @ 0000d03a records: 3, size/record: 2, table size: 6
 	index: 0, handler: __TI_zero_init
 	index: 1, handler: __TI_decompress_rle24
 	index: 2, handler: __TI_decompress_none
@@ -203,7 +203,7 @@ address    name
 00000057   BCSCTL1
 00000058   BCSCTL2
 00000053   BCSCTL3
-0000d014   C$$EXIT
+0000d018   C$$EXIT
 00000059   CACTL1
 0000005a   CACTL2
 000010fb   CALBC1_12MHZ
@@ -291,16 +291,16 @@ address    name
 0000fff4   WDT_interval_handler_ptr
 00000400   __STACK_END
 00000050   __STACK_SIZE
-0000d040   __TI_CINIT_Base
-0000d048   __TI_CINIT_Limit
-0000d036   __TI_Handler_Table_Base
-0000d03c   __TI_Handler_Table_Limit
+0000d044   __TI_CINIT_Base
+0000d04c   __TI_CINIT_Limit
+0000d03a   __TI_Handler_Table_Base
+0000d040   __TI_Handler_Table_Limit
 UNDEFED    __TI_INITARRAY_Base
 UNDEFED    __TI_INITARRAY_Limit
-0000cfec   __TI_ISR_TRAP
+0000cff0   __TI_ISR_TRAP
 00000001   __TI_args_main
-0000cf0e   __TI_decompress_none
-0000cff2   __TI_decompress_rle24
+0000cf12   __TI_decompress_none
+0000cff6   __TI_decompress_rle24
 00000001   __TI_exit
 0000c41e   __TI_frcmpyd
 0000ffe4   __TI_int02
@@ -315,25 +315,25 @@ UNDEFED    __TI_INITARRAY_Limit
 0000fff8   __TI_int12
 0000fffa   __TI_int13
 0000fffc   __TI_int14
-0000ced2   __TI_zero_init
+0000ced6   __TI_zero_init
 ffffffff   __binit__
 ffffffff   __c_args__
 0000cd66   __mspabi_divi
-0000cebc   __mspabi_divu
-0000cdbe   __mspabi_fixdi
+0000cec0   __mspabi_divu
+0000cde8   __mspabi_fixdi
 0000c96c   __mspabi_fixdli
-0000cf82   __mspabi_func_epilog_1
-0000cf80   __mspabi_func_epilog_2
-0000cf7e   __mspabi_func_epilog_3
-0000cf7c   __mspabi_func_epilog_4
-0000cf7a   __mspabi_func_epilog_5
-0000cf78   __mspabi_func_epilog_6
-0000cf76   __mspabi_func_epilog_7
+0000cf86   __mspabi_func_epilog_1
+0000cf84   __mspabi_func_epilog_2
+0000cf82   __mspabi_func_epilog_3
+0000cf80   __mspabi_func_epilog_4
+0000cf7e   __mspabi_func_epilog_5
+0000cf7c   __mspabi_func_epilog_6
+0000cf7a   __mspabi_func_epilog_7
 0000c716   __mspabi_mpyd
-0000cee6   __mspabi_mpyi
-0000ce32   __mspabi_mpyl
+0000ceea   __mspabi_mpyi
+0000ce36   __mspabi_mpyl
 0000cd66   __mspabi_remi
-0000cebc   __mspabi_remu
+0000cec0   __mspabi_remu
 0000cd92   __mspabi_slli
 0000cdba   __mspabi_slli_1
 0000cda8   __mspabi_slli_10
@@ -412,7 +412,7 @@ ffffffff   __c_args__
 0000cc32   __mspabi_srli_7
 0000cc2e   __mspabi_srli_8
 0000cc2a   __mspabi_srli_9
-0000cf20   __mspabi_srll
+0000cf24   __mspabi_srll
 0000cb04   __mspabi_srll_1
 0000cace   __mspabi_srll_10
 0000cac8   __mspabi_srll_11
@@ -429,63 +429,63 @@ ffffffff   __c_args__
 0000cada   __mspabi_srll_8
 0000cad4   __mspabi_srll_9
 0000ca52   _auto_init
-0000ce58   _c_int00
-0000ce58   _c_int00_noexit
+0000ce5c   _c_int00
+0000ce5c   _c_int00_noexit
 0000fffe   _reset_vector
 000003b0   _stack
-0000d010   _system_pre_init
-0000d014   abort
-0000cfda   abs
-0000ce8c   adc_handler
+0000d014   _system_pre_init
+0000d018   abort
+0000cfde   abs
+0000ce90   adc_handler
 0000ffea   adc_handler_ptr
 0000cbb6   amIStuck
 ffffffff   binit
 0000029c   camera_timeout
 00000278   defaultPWM
-0000cf56   forward
+0000cf5a   forward
 00000298   front_final
 00000296   front_initial
 00000294   front_state
-0000cff8   get_latest_front
-0000cffe   get_latest_left
-0000d004   get_latest_right
+0000cffc   get_latest_front
+0000d002   get_latest_left
+0000d008   get_latest_right
 00000288   idx
 0000cb64   init_PWM_timer
-0000d00a   init_camera
+0000d00e   init_camera
 0000cc50   init_lastData
-0000cf96   init_motors
+0000cf9a   init_motors
 0000cd0e   init_sensor_adc
-0000cfa4   init_sensors
-0000ce72   init_ultrasonic_timer
-0000cfce   init_wdt
+0000cfa8   init_sensors
+0000ce76   init_ultrasonic_timer
+0000cfd2   init_wdt
 00000200   lastData
 00000274   last_turn
 00000292   latest_front
 0000028e   latest_left
 00000290   latest_right
-0000cfb2   left
-0000cde6   main
-0000ce0c   make_front_measurement
-0000cf32   memcpy
+0000cfb6   left
+0000cdbe   main
+0000ce10   make_front_measurement
+0000cf36   memcpy
 00000276   pictureTimer
 00000284   ps
-0000cf66   reverse
-0000cfc0   right
+0000cf6a   reverse
+0000cfc4   right
 00000282   sensor_conversions_front
 00000280   sensor_conversions_side
-0000cf86   set_camera_gpio
-0000cefa   stop
-0000cfe4   straight
+0000cf8a   set_camera_gpio
+0000cefe   stop
+0000cfe8   straight
 00000289   stuckCounter
 0000029a   taie_overflow
-0000cea4   take_picture
+0000cea8   take_picture
 0000028c   turnAroundCounter
 00000286   turnBackCounter
 0000028a   turningAround
 00000285   turningBack
 0000cb0c   ultrasonic_timer_handler
 0000fffa   ultrasonic_timer_handler_ptr
-0000cf44   ultrasonic_timer_taie
+0000cf48   ultrasonic_timer_taie
 0000fff8   ultrasonic_timer_taie_ptr
 
 
@@ -718,54 +718,54 @@ address    name
 0000cdb6   __mspabi_slli_3
 0000cdb8   __mspabi_slli_2
 0000cdba   __mspabi_slli_1
-0000cdbe   __mspabi_fixdi
-0000cde6   main
-0000ce0c   make_front_measurement
-0000ce32   __mspabi_mpyl
-0000ce58   _c_int00
-0000ce58   _c_int00_noexit
-0000ce72   init_ultrasonic_timer
-0000ce8c   adc_handler
-0000cea4   take_picture
-0000cebc   __mspabi_divu
-0000cebc   __mspabi_remu
-0000ced2   __TI_zero_init
-0000cee6   __mspabi_mpyi
-0000cefa   stop
-0000cf0e   __TI_decompress_none
-0000cf20   __mspabi_srll
-0000cf32   memcpy
-0000cf44   ultrasonic_timer_taie
-0000cf56   forward
-0000cf66   reverse
-0000cf76   __mspabi_func_epilog_7
-0000cf78   __mspabi_func_epilog_6
-0000cf7a   __mspabi_func_epilog_5
-0000cf7c   __mspabi_func_epilog_4
-0000cf7e   __mspabi_func_epilog_3
-0000cf80   __mspabi_func_epilog_2
-0000cf82   __mspabi_func_epilog_1
-0000cf86   set_camera_gpio
-0000cf96   init_motors
-0000cfa4   init_sensors
-0000cfb2   left
-0000cfc0   right
-0000cfce   init_wdt
-0000cfda   abs
-0000cfe4   straight
-0000cfec   __TI_ISR_TRAP
-0000cff2   __TI_decompress_rle24
-0000cff8   get_latest_front
-0000cffe   get_latest_left
-0000d004   get_latest_right
-0000d00a   init_camera
-0000d010   _system_pre_init
-0000d014   C$$EXIT
-0000d014   abort
-0000d036   __TI_Handler_Table_Base
-0000d03c   __TI_Handler_Table_Limit
-0000d040   __TI_CINIT_Base
-0000d048   __TI_CINIT_Limit
+0000cdbe   main
+0000cde8   __mspabi_fixdi
+0000ce10   make_front_measurement
+0000ce36   __mspabi_mpyl
+0000ce5c   _c_int00
+0000ce5c   _c_int00_noexit
+0000ce76   init_ultrasonic_timer
+0000ce90   adc_handler
+0000cea8   take_picture
+0000cec0   __mspabi_divu
+0000cec0   __mspabi_remu
+0000ced6   __TI_zero_init
+0000ceea   __mspabi_mpyi
+0000cefe   stop
+0000cf12   __TI_decompress_none
+0000cf24   __mspabi_srll
+0000cf36   memcpy
+0000cf48   ultrasonic_timer_taie
+0000cf5a   forward
+0000cf6a   reverse
+0000cf7a   __mspabi_func_epilog_7
+0000cf7c   __mspabi_func_epilog_6
+0000cf7e   __mspabi_func_epilog_5
+0000cf80   __mspabi_func_epilog_4
+0000cf82   __mspabi_func_epilog_3
+0000cf84   __mspabi_func_epilog_2
+0000cf86   __mspabi_func_epilog_1
+0000cf8a   set_camera_gpio
+0000cf9a   init_motors
+0000cfa8   init_sensors
+0000cfb6   left
+0000cfc4   right
+0000cfd2   init_wdt
+0000cfde   abs
+0000cfe8   straight
+0000cff0   __TI_ISR_TRAP
+0000cff6   __TI_decompress_rle24
+0000cffc   get_latest_front
+0000d002   get_latest_left
+0000d008   get_latest_right
+0000d00e   init_camera
+0000d014   _system_pre_init
+0000d018   C$$EXIT
+0000d018   abort
+0000d03a   __TI_Handler_Table_Base
+0000d040   __TI_Handler_Table_Limit
+0000d044   __TI_CINIT_Base
+0000d04c   __TI_CINIT_Limit
 0000ffe4   __TI_int02
 0000ffe6   __TI_int03
 0000ffea   __TI_int05
