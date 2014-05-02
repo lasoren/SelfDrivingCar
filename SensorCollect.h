@@ -6,6 +6,7 @@ typedef int bool;
 #define true 1
 #define false 0
 
+//Function prototypes
 void init_sensors(void);	// routine to setup the sensors
 void init_sensor_adc(void);	// routine to setup ADC
 void init_ultrasonic_timer(void);

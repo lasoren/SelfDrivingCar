@@ -118,7 +118,6 @@ interrupt void WDT_interval_handler(){
 	int rightDist = get_latest_right();
 	int frontDist = get_latest_front();
 	bool iAmStuck = false;
-
 	sensor_conversions_side--;
 	sensor_conversions_front--;
 	stuckCounter--;
