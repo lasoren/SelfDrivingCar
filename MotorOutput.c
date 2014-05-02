@@ -1,15 +1,6 @@
 #include "msp430g2553.h"
 #include "MotorOutput.h"
 
-//1 BIT1 P1.0
-//2 BIT2 P1.1
-//4 BIT3 P1.2
-//8 BIT4 P1.3
-//16 BIT5 P1.4
-//32 BIT6 P1.5
-//64 BIT7 P1.6
-//128 BIT8 P1.7
-
 //driving
 #define PWMA_F BIT2 //port1.2, controls motors PWM
 #define AIN1_F BIT3 //port2, controls the front and back motors

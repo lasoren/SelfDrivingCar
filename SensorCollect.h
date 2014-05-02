@@ -1,10 +1,3 @@
-/*
- * SensorCollect.h
- *
- *  Created on: Apr 28, 2014
- *      Author: John
- */
-
 #ifndef SENSORCOLLECT_H_
 #define SENSORCOLLECT_H_
 

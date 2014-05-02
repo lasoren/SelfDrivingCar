@@ -3,7 +3,9 @@
 #include "MotorOutput.h"
 #include "SensorCollect.h"
 /*
- * main.c
+ * SIM-V (Self-Driving Indoor Mapping Vehicle)
+ *
+ *Built and Coded by Luke Sorenson and John Moore
  */
 
 #define SENSOR_LOOPS_SIDE 20
